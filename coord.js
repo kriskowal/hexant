@@ -174,3 +174,125 @@ OddQBox.prototype.contains = function contains(pointArg) {
     return point.q >= this.topLeft.q && point.q < this.bottomRight.q &&
            point.r >= this.topLeft.r && point.r < this.bottomRight.r;
 };
+
+/*
+
+ * var directions = [
+ *    Hex(+1,  0), Hex(+1, -1), Hex( 0, -1),
+ *    Hex(-1,  0), Hex(-1, +1), Hex( 0, +1)
+ * ]
+ *
+ * function hex_direction(direction):
+ *     return directions[direction]
+ *
+ * function hex_neighbor(hex, direction):
+ *     var dir = hex_direction(direction)
+ *     return Hex(hex.q + dir.q, hex.r + dir.r)
+
+ * // odd-r
+ * var directions = [
+ *   [ Hex(+1,  0), Hex( 0, -1), Hex(-1, -1),
+ *     Hex(-1,  0), Hex(-1, +1), Hex( 0, +1) ],
+ *   [ Hex(+1,  0), Hex(+1, -1), Hex( 0, -1),
+ *     Hex(-1,  0), Hex( 0, +1), Hex(+1, +1) ]
+ * ]
+ *
+ * function offset_neighbor(hex, direction):
+ *     var parity = hex.row & 1
+ *     var dir = directions[parity][direction]
+ *     return Hex(hex.col + dir.col, hex.row + dir.row)
+
+ * // odd-q
+ * var directions = [
+ *   [ Hex(+1,  0), Hex(+1, -1), Hex( 0, -1),
+ *     Hex(-1, -1), Hex(-1,  0), Hex( 0, +1) ],
+ *   [ Hex(+1, +1), Hex(+1,  0), Hex( 0, -1),
+ *     Hex(-1,  0), Hex(-1, +1), Hex( 0, +1) ]
+ * ]
+ *
+ * function offset_neighbor(hex, direction):
+ *     var parity = hex.col & 1
+ *     var dir = directions[parity][direction]
+ *     return Hex(hex.col + dir.col, hex.row + dir.row)
+
+ * var diagonals = [
+ *     Cube(+2, -1, -1), Cube(+1, +1, -2), Cube(-1, +2, -1),
+ *     Cube(-2, +1, +1), Cube(-1, -1, +2), Cube(+1, -2, +1)
+ * ]
+ *
+ * function cube_diagonal_neighbor(hex, direction):
+ *     return cube_add(hex, diagonals[direction])
+
+ * function cube_distance(a, b):
+ *     return (abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z)) / 2
+ *
+ * // An equivalent way to write this is by noting that one of the three
+ * // coordinates must be the sum of the other two, then picking that one as the
+ * // distance. You may prefer the “divide by two” form above, or the “max” form
+ * // here, but they give the same result:
+ *
+ * function cube_distance(a, b):
+ *     return max(abs(a.x - b.x), abs(a.y - b.y), abs(a.z - b.z))
+
+ * function hex_distance(a, b):
+ *     var ac = hex_to_cube(a)
+ *     var bc = hex_to_cube(b)
+ *     return cube_distance(ac, bc)
+ *
+ * // If your compiler inlines hex_to_cube and cube_distance, it will generate
+ * // this code:
+ *
+ * function hex_distance(a, b):
+ *     return ( abs(a.q - b.q)
+ *              + abs(a.q + a.r - b.q - b.r)
+ *              + abs(a.r - b.r)) / 2
+
+ * function cube_lerp(a, b, t):
+ *     return Cube(
+ *         a.x + (b.x - a.x) * t,
+ *         a.y + (b.y - a.y) * t,
+ *         a.z + (b.z - a.z) * t)
+ *
+ * function cube_linedraw(a, b):
+ *     var N = cube_distance(a, b)
+ *     var results = []
+ *     for each 0 ≤ i ≤ N:
+ *         results.append(cube_round(cube_lerp(a, b, 1.0/N * i)))
+ *     return results
+
+ * # convert cube to even-q offset
+ * col = x
+ * row = z + (x + (x&1)) / 2
+ *
+ * # convert even-q offset to cube
+ * x = col
+ * z = row - (col + (col&1)) / 2
+ * y = -x-z
+ *
+ * # convert cube to odd-q offset
+ * col = x
+ * row = z + (x - (x&1)) / 2
+ *
+ * # convert odd-q offset to cube
+ * x = col
+ * z = row - (col - (col&1)) / 2
+ * y = -x-z
+ *
+ * # convert cube to even-r offset
+ * col = x + (z + (z&1)) / 2
+ * row = z
+ *
+ * # convert even-r offset to cube
+ * x = col - (row + (row&1)) / 2
+ * z = row
+ * y = -x-z
+ *
+ * # convert cube to odd-r offset
+ * col = x + (z - (z&1)) / 2
+ * row = z
+ *
+ * # convert odd-r offset to cube
+ * x = col - (row - (row&1)) / 2
+ * z = row
+ * y = -x-z
+ */
