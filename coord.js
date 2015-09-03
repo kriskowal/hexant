@@ -27,6 +27,7 @@ function CubePoint(x, y, z) {
         return new CubePoint(x, y, z);
     }
     if (x + y + z !== 0) {
+        // TODO: assert
         throw new Error(
             'CubePoint invariant violated: ' +
             x + ' + ' +
@@ -72,6 +73,7 @@ CubePoint.prototype.sub = function sub(other) {
     return this;
 };
 CubePoint.prototype.toScreen = function toScreen() {
+    // TODO: verify
     var screenX = 3 / 2 * this.x;
     var screenY = Math.sqrt(3) * (this.z + this.x / 2);
     return ScreenPoint(screenX, screenY);
